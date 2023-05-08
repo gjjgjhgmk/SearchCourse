@@ -4,12 +4,12 @@ from searchcourse import SearchCourse
 from tkinter import ttk, scrolledtext
 
 
-# 创建一个窗体
+# Create a window
 root = tk.Tk()
 root.geometry('600x500')
 root.title('Search Course')
 
-# 创建一个 Frame，用于放置 GitHub 访问令牌文本框和标签
+# Create a Frame for the GitHub token entry box and label
 token_frame = ttk.Frame(root, padding='10 10 10 0')
 token_frame.pack(fill='x')
 ttk.Label(token_frame, text='GitHub Token: ').grid(row=0, column=0, sticky='w')
@@ -17,14 +17,14 @@ token_entry = ttk.Entry(token_frame, show='*')
 token_entry.grid(row=0, column=1, sticky='we')
 token_entry.focus()
 
-# 创建一个 Frame，用于放置搜索关键字文本框和标签
+# Create a Frame for the search keyword entry box and label
 keys_frame = ttk.Frame(root, padding='10 10 10 0')
 keys_frame.pack(fill='x')
 ttk.Label(keys_frame, text='Search Keys: ').grid(row=0, column=0, sticky='w')
 keys_entry = ttk.Entry(keys_frame)
 keys_entry.grid(row=0, column=1, sticky='we')
 
-# 创建一个 Frame，用于放置搜索结果 Text 和滚动条
+# Create a Frame for the search result Text and scrollbar
 result_frame = ttk.Frame(root, padding='10 0 10 10')
 result_frame.pack(fill='both', expand=True)
 ttk.Label(result_frame, text='Search Result: ').pack(side='top', anchor='w')
@@ -34,15 +34,15 @@ output_text = scrolledtext.ScrolledText(result_frame, wrap='word', yscrollcomman
 output_text.pack(side='left', fill='both', expand=True)
 scrollbar.config(command=output_text.yview)
 
-# 创建一个 Frame，用于放置搜索按钮
+# Create a Frame for the search button
 button_frame = ttk.Frame(root, padding='0 10 0 10')
 button_frame.pack()
 search_button = ttk.Button(button_frame, text='Search', command=lambda: search_course())
 search_button.pack()
 
-# 定义搜索课程操作函数
+# Define the search course operation function
 def search_course():
-    # 清空搜索结果
+    # Clear the search result
     output_text.delete('1.0', tk.END)
 
     token = token_entry.get()
@@ -73,9 +73,9 @@ def on_click(e):
     webbrowser.open_new_tab(e.widget.get('current linestart', 'current lineend')) 
 
 
-# 设置主题样式
+# Set the theme style
 style = ttk.Style()
 style.theme_use('clam')
 
-# 进入主循环
+# Enter the main loop
 root.mainloop()
