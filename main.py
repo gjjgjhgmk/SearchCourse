@@ -1,32 +1,81 @@
 import tkinter as tk
+import webbrowser
 from searchcourse import SearchCourse
+from tkinter import ttk, scrolledtext
+
 
 # 创建一个窗体
 root = tk.Tk()
+root.geometry('600x500')
 root.title('Search Course')
 
-# 添加 Label 和 Entry，用于输入 GitHub 访问令牌和搜索关键字
-tk.Label(root, text='GitHub Token: ').grid(row=0, column=0)
-token_entry = tk.Entry(root, show='*')
-token_entry.grid(row=0, column=1)
+# 创建一个 Frame，用于放置 GitHub 访问令牌文本框和标签
+token_frame = ttk.Frame(root, padding='10 10 10 0')
+token_frame.pack(fill='x')
+ttk.Label(token_frame, text='GitHub Token: ').grid(row=0, column=0, sticky='w')
+token_entry = ttk.Entry(token_frame, show='*')
+token_entry.grid(row=0, column=1, sticky='we')
+token_entry.focus()
 
-tk.Label(root, text='Search Key: ').grid(row=1, column=0)
-key_entry = tk.Entry(root)
-key_entry.grid(row=1, column=1)
+# 创建一个 Frame，用于放置搜索关键字文本框和标签
+keys_frame = ttk.Frame(root, padding='10 10 10 0')
+keys_frame.pack(fill='x')
+ttk.Label(keys_frame, text='Search Keys: ').grid(row=0, column=0, sticky='w')
+keys_entry = ttk.Entry(keys_frame)
+keys_entry.grid(row=0, column=1, sticky='we')
 
-result_text = tk.Text(root)
-result_text.grid(row=2, column=0, columnspan=2)
+# 创建一个 Frame，用于放置搜索结果 Text 和滚动条
+result_frame = ttk.Frame(root, padding='10 0 10 10')
+result_frame.pack(fill='both', expand=True)
+ttk.Label(result_frame, text='Search Result: ').pack(side='top', anchor='w')
+scrollbar = ttk.Scrollbar(result_frame)
+scrollbar.pack(side='right', fill='y')
+output_text = scrolledtext.ScrolledText(result_frame, wrap='word', yscrollcommand=scrollbar.set)
+output_text.pack(side='left', fill='both', expand=True)
+scrollbar.config(command=output_text.yview)
 
-# 添加 Button，用于启动搜索课程操作
-def search():
-    search_course = SearchCourse(token_entry.get())
-    url_list = search_course.search_course(key_entry.get())
-    result_text.delete('1.0', tk.END) # 清空原有的输出内容
+# 创建一个 Frame，用于放置搜索按钮
+button_frame = ttk.Frame(root, padding='0 10 0 10')
+button_frame.pack()
+search_button = ttk.Button(button_frame, text='Search', command=lambda: search_course())
+search_button.pack()
+
+# 定义搜索课程操作函数
+def search_course():
+    # 清空搜索结果
+    output_text.delete('1.0', tk.END)
+
+    token = token_entry.get()
+    keys = keys_entry.get().split(',')
+    sc = SearchCourse(token)
+    sc.set_keys(keys)
+    url_list = sc.search()
     for url in url_list:
-        result_text.insert(tk.END, url + '\n')
+        output_text.insert(tk.END, url + '\n')
+        text_start = output_text.search(url, tk.END, backwards=False)
+        text_end = f'{text_start} + {len(url)} char'
+        output_text.tag_add(url, text_start, text_end)
+        output_text.tag_config(url, foreground='blue', underline=True)
+        output_text.tag_bind(url, '<Enter>', on_enter)
+        output_text.tag_bind(url, '<Leave>', on_leave)
+        output_text.tag_bind(url, '<Button-1>', on_click)
 
-search_button = tk.Button(root, text='Search', command=search)
-search_button.grid(row=3, column=0, columnspan=2)
+
+def on_enter(e):
+    output_text.config(cursor='hand2')
+
+
+def on_leave(e):
+    output_text.config(cursor='arrow')
+
+
+def on_click(e):
+    webbrowser.open_new_tab(e.widget.get('current linestart', 'current lineend')) 
+
+
+# 设置主题样式
+style = ttk.Style()
+style.theme_use('clam')
 
 # 进入主循环
 root.mainloop()
