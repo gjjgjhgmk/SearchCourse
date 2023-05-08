@@ -14,15 +14,19 @@ tk.Label(root, text='Search Key: ').grid(row=1, column=0)
 key_entry = tk.Entry(root)
 key_entry.grid(row=1, column=1)
 
+result_text = tk.Text(root)
+result_text.grid(row=2, column=0, columnspan=2)
+
 # 添加 Button，用于启动搜索课程操作
 def search():
     search_course = SearchCourse(token_entry.get())
     url_list = search_course.search_course(key_entry.get())
+    result_text.delete('1.0', tk.END) # 清空原有的输出内容
     for url in url_list:
-        print(url)
+        result_text.insert(tk.END, url + '\n')
 
 search_button = tk.Button(root, text='Search', command=search)
-search_button.grid(row=2, column=0, columnspan=2)
+search_button.grid(row=3, column=0, columnspan=2)
 
 # 进入主循环
 root.mainloop()
