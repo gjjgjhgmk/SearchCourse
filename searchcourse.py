@@ -4,9 +4,9 @@ class SearchCourse:
     def __init__(self, token):
         self.token = token
 
-    def search_course(self):
+    def search_course(self, key):
         headers = {"Authorization": "token " + self.token}
-        search = 'ustc course'  # 这里放搜索关键字
+        search = 'ustc course ' + key  # 在搜索关键字中添加用户输入的关键字
         search = search.replace(' ', '+')
         url_list = []
         for page in range(1, 11):
@@ -21,7 +21,7 @@ class SearchCourse:
                 if 'tree' not in content.json().keys():
                     continue
                 files = full_name.lower()
-                keys=['编译','compile'] #搜索关键字
+                keys=[key] # 改成用户输入的关键字
                 for file in content.json()["tree"]:
                     files += file['path'].lower()
                 for key in keys:
